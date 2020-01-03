@@ -1,29 +1,30 @@
 package report
 
 import (
-	"github.com/jung-kurt/gofpdf"
 	"log"
 	"strconv"
+
+	"github.com/jung-kurt/gofpdf"
 )
+
 // report data struct
 type ReportData struct {
 	Name       string
 	ReportDate string
 	Country    string
 	Gpa        string
+	Phone      string
 	Courses    []Course
 }
 
-
 // read the data as string to prevent float conversion
 type Course struct {
-	Name  string
+	Name        string
 	Credits     int
-	Percentage       string
+	Percentage  string
 	LetterGrade string
 	Gradepts    string
 }
-
 
 /*
 // test json data
@@ -44,40 +45,41 @@ var reportd ReportData = ReportData{
 	Gpa:        "2.98",
 	Courses: []Course{
 		Course{
-			Name:  "Social Anthropology",
+			Name:        "Social Anthropology",
 			Credits:     3,
-			Percentage:       "83.66",
+			Percentage:  "83.66",
 			LetterGrade: "B",
 			Gradepts:    "3.00"},
 		Course{
-			Name:  "Computer Science 177",
+			Name:        "Computer Science 177",
 			Credits:     6,
-			Percentage:       "93.66",
+			Percentage:  "93.66",
 			LetterGrade: "A",
 			Gradepts:    "$.00"},
 		Course{
-			Name:  "Computer Science 180",
+			Name:        "Computer Science 180",
 			Credits:     3,
-			Percentage:       "83.66",
+			Percentage:  "83.66",
 			LetterGrade: "B",
 			Gradepts:    "3.00"},
 		Course{
-			Name:  "Social Anthropology",
+			Name:        "Social Anthropology",
 			Credits:     3,
-			Percentage:       "83.66",
+			Percentage:  "83.66",
 			LetterGrade: "B",
 			Gradepts:    "3.00"}}}
 
-
-
-func GenReport(reportd ReportData) {
+func GenReport(reportd ReportData, filename string, logger *log.Logger) error {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	reportInfo(pdf, reportd)
 	printTable(pdf, reportd)
 	lastPage(pdf)
-	err := pdf.OutputFileAndClose("public/hello.pdf")
+	err := pdf.OutputFileAndClose("public/" + filename)
 	if err != nil {
-		log.Fatal("file is not created...")
+		logger.Println("file is not created...")
+		return err
+	} else {
+		return nil
 	}
 }
 func reportInfo(pdf *gofpdf.Fpdf, reportd ReportData) {
@@ -96,10 +98,10 @@ func reportInfo(pdf *gofpdf.Fpdf, reportd ReportData) {
 	pdf.Ln(7)
 	// report ID
 	pdf.SetFont("Arial", "B", 10)
-	pdf.Cell(0, 15, "Report ID")
+	pdf.Cell(0, 15, "Contact(Phone): ")
 	pdf.SetX(50)
 	pdf.SetFont("Arial", "", 10)
-	pdf.Cell(0, 15, "107373")
+	pdf.Cell(0, 15, reportd.Phone)
 	pdf.Ln(7)
 	// Report Date
 	pdf.SetFont("Arial", "B", 10)
